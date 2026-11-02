@@ -14,7 +14,7 @@ services:
         sync: false
       - key: ZAI_API_KEY
         sync: false
-      - key: NVIDIA_API_KEY
+      - key: MELIOUS_API_KEY
         sync: false
       - key: GEMINI_API_KEY
         sync: false
