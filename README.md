@@ -12,7 +12,8 @@ One API key for DeepSeek, GLM (Z.ai) and Gemma (Google), behind an OpenAI-compat
 | Prefix | Goes to | Example model |
 |---|---|---|
 | `deepseek/` | api.deepseek.com | `deepseek/deepseek-v4.1-flash` |
-| `glm/` | api.z.ai | `glm/glm-5.3-flash` |
+| `glm/` | api.z.ai (card only) | `glm/glm-5.3-flash` |
+| `nvidia/` | NVIDIA free API (build.nvidia.com) | `nvidia/z-ai/glm-5.3-flash` |
 | `gemma/` | Google Gemini API | `gemma/gemma-4-31b-it` |
 
 Everything after the prefix is sent to the provider unchanged, so check each provider's model list for the exact ID.
@@ -24,6 +25,7 @@ Everything after the prefix is sent to the provider unchanged, so check each pro
 | `API_KEYS` | Your own key(s), comma-separated. Generate with `openssl rand -hex 32`. |
 | `DEEPSEEK_API_KEY` | From platform.deepseek.com |
 | `ZAI_API_KEY` | From z.ai (standard API key, not a Coding Plan key) |
+| `NVIDIA_API_KEY` | From build.nvidia.com (free) |
 | `GEMINI_API_KEY` | From aistudio.google.com/apikey |
 | `ALLOWED_ORIGINS` | `*` or a comma-separated list like `https://janitorai.com` |
 

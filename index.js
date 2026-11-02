@@ -19,6 +19,11 @@ const PROVIDERS = {
     url: "https://api.z.ai/api/paas/v4/chat/completions",
     key: process.env.ZAI_API_KEY,
   },
+  // NVIDIA's free API (build.nvidia.com). Model IDs there include a slash, e.g. "nvidia/z-ai/glm-5.3-flash".
+  nvidia: {
+    url: "https://integrate.api.nvidia.com/v1/chat/completions",
+    key: process.env.NVIDIA_API_KEY,
+  },
   gemma: {
     url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     key: process.env.GEMINI_API_KEY,
@@ -28,7 +33,7 @@ const PROVIDERS = {
 // Shown by GET /v1/models so apps can list them. Check each provider's model list for exact IDs.
 const MODELS = [
   "deepseek/deepseek-v4.1-flash",
-  "glm/glm-5.3-flash",
+  "nvidia/z-ai/glm-5.3-flash",
   "gemma/gemma-4-31b-it",
 ];
 
