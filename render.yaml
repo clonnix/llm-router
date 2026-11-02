@@ -10,13 +10,7 @@ services:
     envVars:
       - key: API_KEYS
         sync: false # your own key(s), comma-separated
-      - key: DEEPSEEK_API_KEY
-        sync: false
-      - key: ZAI_API_KEY
-        sync: false
-      - key: MELIOUS_API_KEY
-        sync: false
-      - key: GEMINI_API_KEY
+      - key: AIMLAPI_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS
         value: "*"

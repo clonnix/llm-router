@@ -1,5 +1,5 @@
 // Personal LLM router: one API key, many providers.
-// Exposes an OpenAI-compatible API and forwards requests to DeepSeek, Z.ai (GLM) and Google (Gemma).
+// Exposes an OpenAI-compatible API and forwards requests to AI/ML API (GLM, DeepSeek, Gemma and more).
 // No dependencies: needs Node 20+ (built-in fetch).
 
 import http from "node:http";
@@ -8,34 +8,28 @@ import { Readable } from "node:stream";
 
 // ---------- Config ----------
 
-// Model names you send look like "<prefix>/<upstream model id>", e.g. "glm/glm-5.3-flash".
-// The prefix picks the provider; the rest is passed to that provider unchanged.
+// Send model names exactly as the provider names them, e.g. "z-ai/glm-5.3-flash".
+// To force a specific provider, prefix it: "<provider>/<model id>".
 const PROVIDERS = {
-  deepseek: {
-    url: "https://api.deepseek.com/chat/completions",
-    key: process.env.DEEPSEEK_API_KEY,
+  // AI/ML API (pays with PayPal). Has GLM-5.3 Flash, DeepSeek V4.1 Flash and Gemma 4 31B.
+  // This is the default: any model without a known prefix goes here unchanged, e.g. "z-ai/glm-5.3-flash".
+  aimlapi: {
+    url: "https://api.aimlapi.com/v1/chat/completions",
+    key: process.env.AIMLAPI_API_KEY,
   },
-  glm: {
-    url: "https://api.z.ai/api/paas/v4/chat/completions",
-    key: process.env.ZAI_API_KEY,
-  },
-  // Melious (EU, fast). Has GLM-5.3 Flash, DeepSeek V4.1 Flash and Gemma 4 31B. Model IDs: GET https://api.melious.ai/v1/models
-  melious: {
-    url: "https://api.melious.ai/v1/chat/completions",
-    key: process.env.MELIOUS_API_KEY,
-  },
-  gemma: {
-    url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-    key: process.env.GEMINI_API_KEY,
-  },
+  // Add more providers here later, e.g.:
+  // deepseek: { url: "https://api.deepseek.com/chat/completions", key: process.env.DEEPSEEK_API_KEY },
 };
 
 // Shown by GET /v1/models so apps can list them. Check each provider's model list for exact IDs.
 const MODELS = [
+  "z-ai/glm-5.3-flash",
   "deepseek/deepseek-v4.1-flash",
-  "melious/glm-5.3-flash",
-  "gemma/gemma-4-31b-it",
+  "google/gemma-4-31b-it",
 ];
+
+// Models whose prefix isn't one of the PROVIDERS above are sent here with their full name.
+const DEFAULT_PROVIDER = "aimlapi";
 
 // Your own key(s). Comma-separated, so each device/site can get its own and you can revoke one.
 const API_KEYS = (process.env.API_KEYS || "")
@@ -108,13 +102,17 @@ async function chatCompletions(req, res) {
   }
 
   const fullModel = String(body.model || "");
+  if (!fullModel) return error(res, 400, "Missing model");
   const slash = fullModel.indexOf("/");
-  const prefix = slash > 0 ? fullModel.slice(0, slash) : "";
-  const provider = PROVIDERS[prefix];
+  let prefix = slash > 0 ? fullModel.slice(0, slash) : "";
+  let upstreamModel = fullModel.slice(slash + 1);
 
-  if (!provider) {
-    return error(res, 400, `Unknown model "${fullModel}". Use one of: ${Object.keys(PROVIDERS).map((p) => p + "/...").join(", ")}`);
+  // No known provider prefix: send the full model name to the default provider.
+  if (!PROVIDERS[prefix]) {
+    prefix = DEFAULT_PROVIDER;
+    upstreamModel = fullModel;
   }
+  const provider = PROVIDERS[prefix];
   if (!provider.key) return error(res, 500, `No API key configured for "${prefix}"`);
 
   // Cancel the upstream request if the client disconnects (saves tokens)
@@ -126,7 +124,7 @@ async function chatCompletions(req, res) {
     upstream = await fetch(provider.url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.key}` },
-      body: JSON.stringify({ ...body, model: fullModel.slice(slash + 1) }),
+      body: JSON.stringify({ ...body, model: upstreamModel }),
       signal: abort.signal,
     });
   } catch (e) {
