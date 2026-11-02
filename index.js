@@ -1,5 +1,5 @@
 // Personal LLM router: one API key, many providers.
-// Exposes an OpenAI-compatible API and forwards requests to AI/ML API (GLM, DeepSeek, Gemma and more).
+// Exposes an OpenAI-compatible API and forwards requests to CometAPI (GLM, DeepSeek and more).
 // No dependencies: needs Node 20+ (built-in fetch).
 
 import http from "node:http";
@@ -8,28 +8,28 @@ import { Readable } from "node:stream";
 
 // ---------- Config ----------
 
-// Send model names exactly as the provider names them, e.g. "z-ai/glm-5.3-flash".
+// Send model names exactly as the provider names them, e.g. "glm-5.3-flash".
 // To force a specific provider, prefix it: "<provider>/<model id>".
 const PROVIDERS = {
-  // AI/ML API (pays with PayPal). Has GLM-5.3 Flash, DeepSeek V4.1 Flash and Gemma 4 31B.
-  // This is the default: any model without a known prefix goes here unchanged, e.g. "z-ai/glm-5.3-flash".
-  aimlapi: {
-    url: "https://api.aimlapi.com/v1/chat/completions",
-    key: process.env.AIMLAPI_API_KEY,
+  // CometAPI (cometapi.com). Has GLM-5.3 Flash and DeepSeek V4.1 Flash.
+  // This is the default: any model without a known prefix goes here unchanged, e.g. "glm-5.3-flash".
+  cometapi: {
+    url: "https://api.cometapi.com/v1/chat/completions",
+    key: process.env.COMETAPI_API_KEY,
   },
   // Add more providers here later, e.g.:
   // deepseek: { url: "https://api.deepseek.com/chat/completions", key: process.env.DEEPSEEK_API_KEY },
 };
 
 // Shown by GET /v1/models so apps can list them. Check each provider's model list for exact IDs.
+// Check CometAPI's model list for exact IDs.
 const MODELS = [
-  "z-ai/glm-5.3-flash",
-  "deepseek/deepseek-v4.1-flash",
-  "google/gemma-4-31b-it",
+  "glm-5.3-flash",
+  "deepseek-v4.1-flash",
 ];
 
 // Models whose prefix isn't one of the PROVIDERS above are sent here with their full name.
-const DEFAULT_PROVIDER = "aimlapi";
+const DEFAULT_PROVIDER = "cometapi";
 
 // Your own key(s). Comma-separated, so each device/site can get its own and you can revoke one.
 const API_KEYS = (process.env.API_KEYS || "")

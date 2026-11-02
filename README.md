@@ -1,6 +1,6 @@
 # LLM Router
 
-Your own OpenAI-compatible endpoint with your own API key(s), in front of AI/ML API (aimlapi.com, pays with PayPal). No dependencies, Node 20+.
+Your own OpenAI-compatible endpoint with your own API key(s), in front of CometAPI (cometapi.com). No dependencies, Node 20+.
 
 ## Use it
 
@@ -10,18 +10,17 @@ Your own OpenAI-compatible endpoint with your own API key(s), in front of AI/ML 
 
 | Model | ID |
 |---|---|
-| GLM-5.3 Flash | `z-ai/glm-5.3-flash` |
-| DeepSeek V4.1 Flash | `deepseek/deepseek-v4.1-flash` |
-| Gemma 4 31B | `google/gemma-4-31b-it` |
+| GLM-5.3 Flash | `glm-5.3-flash` |
+| DeepSeek V4.1 Flash | check CometAPI's model list |
 
-Any other AI/ML API model ID works too.
+Any other CometAPI model ID works too.
 
 ## Environment variables
 
 | Name | What |
 |---|---|
 | `API_KEYS` | Your own key(s), comma-separated. Generate with `openssl rand -hex 32`. |
-| `AIMLAPI_API_KEY` | From aimlapi.com |
+| `COMETAPI_API_KEY` | From cometapi.com |
 | `ALLOWED_ORIGINS` | `*` or a comma-separated list like `https://janitorai.com` |
 
 ## Adding another provider
